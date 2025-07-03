@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import localFont from "next/font/local";
 import "./globals.css";
-import data from "@/data/data.json"
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -20,7 +19,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const categories = [...new Set(data.map((d)=> d.category))];
   return (
     <html lang="en">
       <body
@@ -31,7 +29,7 @@ export default function RootLayout({ children }) {
           <div class="container mx-auto px-4">
             <div class="flex flex-col lg:flex-row">
               {children}
-              <Sidebar categories={categories}/>{" "}
+              <Sidebar />{" "}
             </div>
           </div>
         </section>

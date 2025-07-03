@@ -5,7 +5,6 @@ import data from "@/data/data.json";
 export default function Home({ searchParams }) {
   let contents = data;
   const sortBy = searchParams.sort || "latest";
-  console.log(sortBy);
 
   contents = contents.sort((a, b) => {
     const dateA = new Date(a.date);
@@ -20,10 +19,22 @@ export default function Home({ searchParams }) {
     }
   });
 
+  const activeCategories = Array.isArray(searchParams.category)
+    ? searchParams.category
+    : searchParams.category
+    ? [searchParams.category]
+    : [];
+
+  if (activeCategories.length > 0) {
+    contents = contents.filter((blog) =>
+      activeCategories.includes(blog.category)
+    );
+  }
+
   return (
     <>
       <div class="lg:w-2/3 lg:pr-12">
-        <Sorting selected={sortBy}/>
+        <Sorting selected={sortBy} />
         {contents.map((content) => (
           <ArticleCard key={content?.title} content={content} />
         ))}

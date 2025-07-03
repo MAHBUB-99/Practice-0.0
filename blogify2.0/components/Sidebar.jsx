@@ -1,6 +1,44 @@
+"use client";
+import data from "@/data/data.json";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-export default function Sidebar({ categories }) {
+export default function Sidebar() {
+  const categories = [...new Set(data.map((d) => d.category))];
+
+  const searchParams = useSearchParams();
+
+  const activeCategories = searchParams.getAll("category");
+
+  const buildCatHref = (category) => {
+    const currentParams = new URLSearchParams(searchParams.toString());
+    const existingCatParams = currentParams.getAll("category");
+    let newCatParams = [];
+
+    if (existingCatParams.length > 0) {
+      newCatParams = [...existingCatParams];
+    }
+
+    if (newCatParams.includes(category)) {
+      newCatParams = newCatParams.filter((cat) => cat != category);
+    } else {
+      newCatParams.push(category);
+    }
+
+    currentParams.delete("category");
+    newCatParams.forEach((cat) => {
+      currentParams.append("category", cat);
+    });
+
+    const currentSortParam = searchParams.get("sort");
+    if (currentSortParam) {
+      currentParams.set("sort", currentSortParam);
+    } else {
+      currentParams.delete("sort");
+    }
+    return `/?${currentParams.toString()}`;
+  };
+
   return (
     <div className="lg:w-1/3 mt-10 lg:mt-0">
       <div className="sticky top-20">
@@ -11,8 +49,13 @@ export default function Sidebar({ categories }) {
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <Link
-                href="#"
-                className="bg-gray-100 px-4 py-2 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                key={cat}
+                href={buildCatHref(cat)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeCategories.includes(cat)
+                    ? "bg-green-200"
+                    : "bg-gray-100 hover:bg-gray-200"
+                }`}
               >
                 {cat}
               </Link>
